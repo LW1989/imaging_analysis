@@ -38,15 +38,16 @@ else:
     df=pd.read_csv(path_to_data)
     
     
-# df_1=pre_processing(pd.read_csv(path_to_data_1))
-
 #delete ROIs that you dont want to include REMEMBER TO START COUNTING FROM 0!!!
+list_of_excluded_rois=[] #add ROIs that you want to exclude. Seperate by ','
+
 
 if exclude_rois==True:
-    test_columns=df.iloc[:, [17]].columns
+    test_columns=df.iloc[:, list_of_excluded_rois].columns
     df=df.drop(columns=test_columns)
     
-    df.to_csv((path_to_data[:-4] + '_new' + file_extension), index=False)
+    #This line saves your new data as csv file with the same name + '_new' to the same path
+    df.to_csv((path_to_data[:-4] + '_new' + file_extension), index=False)  
 
 # Input if you want to convert frames to seconds
 frames_to_seconds=False
@@ -88,23 +89,31 @@ from matplotlib import pyplot as pl
 col_num=len(df.columns)
 
 
-#plotting individual ROIs
+#plotting individual ROIs in individual subplots
 number_of_subplots=list(range(0,len(df.columns)))
-df.plot(subplots=True, layout=(7, 5), figsize=(24, 24), sharex=False, legend=None, title=number_of_subplots);
+df.plot(subplots=True, layout=(7, 5), figsize=(24, 24), sharex=True, legend=None, title=number_of_subplots);
 
-#plotting individual ROIs 2
+#plotting individual ROIs in ONE plot (overlayed)
 df.plot(legend=None)
 ax = pl.gca()
 pl.xlabel(x_label)
 pl.ylabel('\u0394 F/F')
-#ax.axes.xaxis.set_visible(False)
-#ax.axes.yaxis.set_ticklabels([])
+ax.spines['right'].set_visible(False)
+ax.spines['top'].set_visible(False)
 pl.show()
 
 #plotting mean + SD
 
-pl.plot(df_mean)
+pl.plot(df_mean, color='black', linewidth=0.75)
 pl.fill_between(range(len(df_mean)), df_mean-df_std, df_mean+df_std, alpha=0.5)
+x_coordinates = [0, len(df_mean)]
+y_coordinates = [0, 0]
+pl.plot(x_coordinates, y_coordinates,linestyle='dashed',c='k', alpha=0.75)
+ax = pl.gca()
+ax.spines['right'].set_visible(False)
+ax.spines['top'].set_visible(False)
+pl.xlim(0,600)
+# pl.ylim(0,1)
 pl.xlabel(x_label)
 pl.ylabel('\u0394 F/F')
 pl.title('M34 + jRCaMP; Mean + SD')
@@ -112,15 +121,17 @@ pl.show()
 
 #plotting mean + SEM
 
-pl.plot(df_mean)
+pl.plot(df_mean, color='black', linewidth=0.75)
 pl.fill_between(range(len(df_mean)), df_mean-df_sem, df_mean+df_sem, alpha=0.5)
+pl.plot(x_coordinates, y_coordinates,linestyle='dashed',c='k', alpha=0.75)
+ax = pl.gca()
+ax.spines['right'].set_visible(False)
+ax.spines['top'].set_visible(False)
+pl.xlim(0,600)
+# pl.ylim(0,1)
 pl.xlabel(x_label)
 pl.ylabel('\u0394 F/F')
 pl.title('M34 + jRCaMP; Mean + SEM')
 #pl.xlim(0,599)
 pl.show()
-
-
-# dies ist ein test, kann man das lesen?
-abc=[]
 
