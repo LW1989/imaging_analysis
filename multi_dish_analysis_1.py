@@ -227,3 +227,12 @@ pl.ylabel('\u0394 F/F')
 pl.title('Mean of \u0394 F/F before and after 5-HT and ATP stimulation')
 
 
+#calculate p-values
+
+import scipy.stats as stats
+
+ttest_pre_post_1=stats.ttest_rel(df_values_combined['Baseline'], df_values_combined['5-HT'])
+print('Basline vs. 5-HT: p=' + str(ttest_pre_post_1[1]))
+ttest_pre_post_2=stats.ttest_rel(df_values_combined['Baseline'], df_values_combined['ATP'])
+print('Basline vs. ATP: p=' + str(ttest_pre_post_2[1]))
+
