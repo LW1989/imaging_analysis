@@ -18,7 +18,9 @@ def pre_processing(df):
     
     return df_background_sub
 
-#State if you want data to be preprocessed 
+#State if you want data to be preprocessed (you already did pre processing if 
+#you already run single_dish_analysis script)
+
 pre_processing_bool=False
 
 #creat list of dataframes; every dataframe is one dish/trial, remeber to use preprocessing function
@@ -38,17 +40,25 @@ if pre_processing_bool==True:
         trial_list[it_count]=pre_processing(i)
 
 #count how many ROI/Cells there are in all trials combined and add Trial number to column name
+#This has to be done because otherwise you have duplicate column names and combing all trials
+#in one DataFrame does not work
 
 col_num=0
 for it_count, number in enumerate(trial_list):
     col_num=col_num + len(number.columns)
     number.columns=list(number.columns + '_Trial_' + str(it_count+1))
     
-#col_new=list(range(0,col_num))
-
 combined_df=pd.concat(trial_list, axis=1) #combine all trials in one dataframe
   
+# Input if you want to convert frames to seconds
+frames_to_seconds=False
 
+if frames_to_seconds==True:
+    fps_rate=1 #Change to actual framerate
+    combined_df.index=combined_df.index/fps_rate
+    x_label='Time (s)'
+else:
+    x_label='Frames'
 
 #Calculate deltaf/f
 
@@ -60,7 +70,6 @@ bla_list=[]
 
 for column_name in combined_df:
     column=combined_df[column_name]
-#    print(column)
     for i in range(0,len(column)):
         a=(column.iloc[i] - column.iloc[f_pre_start])/column.iloc[f_base_value]
         bla_list.append(a)
@@ -217,4 +226,13 @@ pl.ylim(-0.1, 1)
 pl.ylabel('\u0394 F/F')
 pl.title('Mean of \u0394 F/F before and after 5-HT and ATP stimulation')
 
+
+#calculate p-values
+
+import scipy.stats as stats
+
+ttest_pre_post_1=stats.ttest_rel(df_values_combined['Baseline'], df_values_combined['5-HT'])
+print('Basline vs. 5-HT: p=' + str(ttest_pre_post_1[1]))
+ttest_pre_post_2=stats.ttest_rel(df_values_combined['Baseline'], df_values_combined['ATP'])
+print('Basline vs. ATP: p=' + str(ttest_pre_post_2[1]))
 
