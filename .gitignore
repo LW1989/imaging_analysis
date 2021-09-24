@@ -4,3 +4,6 @@
 .spyproject/config/backups/encoding.ini.bak
 .spyproject/config/backups/codestyle.ini.bak
 .spyproject
+single_dish_analysis_1_test.py
+test_seaborn.py
+all_trials_mean_sem.svg
